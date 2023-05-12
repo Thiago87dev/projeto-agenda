@@ -1,0 +1,115 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <title>{%block titulo%} agenda linda {%endblock%}</title>
+
+    {% include 'partials/_head.html' %}
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'index'%}">Agenda</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+                aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="container">
+                <a class="navbar-brand" href="{% url 'logout'%}">sair</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+                    aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+  
+    <!-- Page Content -->
+  <div class="container">
+    <div class="row">
+        <div class="col-lg-12"> 
+        
+        {%if 'accounts' not in request.path%}
+        <br><br>
+        <form method="get" action="{%url 'busca' %}">
+          <div class="form-group row">
+            <div class="col-12">
+              <input class="form-control"
+                    type="search" value="{{ request.GET.termo }}"
+                    id="search-input"
+                    placeholder="Digite sua pesquisa"
+                    name="termo">
+              {%include 'partials/_messages.html'%}
+            </div>
+          </div>
+        </form>
+        {% endif %}
+
+
+        {%block conteudo%} 
+        <h1 class="mt-5">Minha agenda</h1>
+        <a href="{% url 'dashboard' %}">clique aqui</a> para cadastrar novo usuario
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Sobrenome</th>
+                    <th>Telefone</th>
+                    <th>Categoria</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in contatos %}
+                        <tr>
+                            <td>{{ i.id }}</td>
+                            <td><a href="{% url 'ver_ctt' i.id %}">{{i.nome}}</a></td>
+                            <td>{{i.sobrenome}}</td>
+                            <td>{{i.telefone}}</td>
+                            <td>{{i.categoria}}</td>
+                        </tr>
+                {% endfor %} 
+    
+            </tbody>
+        </table>
+    
+        <nav aria-label="Navegação de página exemplo">
+            <ul class="pagination">
+                {%if contatos.has_previous%}
+                    <li class="page-item"><a class="page-link" href="?p={{contatos.previous_page_number}}&termo={{ request.GET.termo }}">
+                        Anterior</a></li>
+                {%endif%}
+                {% for i in contatos.paginator.page_range %}
+                    {% if i == contatos.number %}
+                        <li class="page-item active"><a class="page-link" href="?p={{i}}&termo={{ request.GET.termo }}">{{ i }}</a></li>
+                    {% elif i > contatos.number|add:'-3' and i < contatos.number|add:'3' %}
+                        <li class="page-item"><a class="page-link" href="?p={{ i }}&termo={{ request.GET.termo }}">{{ i }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                {%if contatos.has_next%}
+              <li class="page-item"><a class="page-link" href="?p={{contatos.next_page_number}}&termo={{ request.GET.termo }}">
+                Próximo</a></li>
+                {%endif%}
+            </ul>
+        </nav>
+        {%endblock%}
+        </div>
+    </div>
+    </div>
+
+  <!-- Bootstrap core JavaScript -->
+  <script src="{% static 'vendor/jquery/jquery.slim.min.js'%}"></script>
+  <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js'%}"></script>
+
+</body>
+
+</html>
+
+
+
+
